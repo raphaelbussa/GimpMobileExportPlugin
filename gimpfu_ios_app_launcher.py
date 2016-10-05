@@ -26,7 +26,7 @@ DEFAULT_FOLDER_PREFIX = 'drawable'
 
 UPSCALE_WARN_MESSAGE = '\nQuality of your application could be seriously affected when using upscaled bitmaps !'
 
-def write_xdpi(img, layer, res_folder, image_basename, image_extension):
+def write_xdpi(img, layer, res_folder, image_basename, iphone, ipad, itunesartwork, image_extension):
     '''
     Resize and write images for all android density folders 
     
@@ -43,19 +43,12 @@ def write_xdpi(img, layer, res_folder, image_basename, image_extension):
     
     gimpfu.pdb.gimp_edit_copy_visible(img); #@UndefinedVariable
     
-    dpi_ratios = (('iPhone-20@1x', 20 ),
-                  ('iPhone-20@2x', 40 ),
-                  ('iPhone-20@3x', 60 ),
-                  ('iPhone-29@1x', 29 ),
-                  ('iPhone-29@2x', 58 ),
-                  ('iPhone-29@3x', 87 ),
-                  ('iPhone-40@1x', 40 ),
-                  ('iPhone-40@2x', 80 ),
-                  ('iPhone-40@3x', 120 ),
-                  ('iPhone-60@1x', 60 ),
-                  ('iPhone-60@2x', 120 ),
-                  ('iPhone-60@3x', 180 ),
-                  ('iPad-20@1x', 20 ),
+    dpi_ratios_itunes = (('iTunesArtwork@1x', 512 ),
+                  ('iTunesArtwork@2x', 1024 ),
+                  ('iTunesArtwork@3x', 1536 ))
+
+    
+    dpi_ratios_ipad = (('iPad-20@1x', 20 ),
                   ('iPad-20@2x', 40 ),
                   ('iPad-20@3x', 60 ),
                   ('iPad-29@1x', 29 ),
@@ -69,12 +62,37 @@ def write_xdpi(img, layer, res_folder, image_basename, image_extension):
                   ('iPad-76@3x', 228 ),
                   ('iPad-83.5@1x', 83.5 ),
                   ('iPad-83.5@2x', 167 ),
-                  ('iPad-83.5@3x', 250.5 ),
-                  ('iTunesArtwork@1x', 512 ),
-                  ('iTunesArtwork@2x', 1024 ),
-                  ('iTunesArtwork@3x', 1536 ))
+                  ('iPad-83.5@3x', 250.5 ))
 
-    for folder, ratio in dpi_ratios:
+    
+    dpi_ratios_iphone = (('iPhone-20@1x', 20 ),
+                  ('iPhone-20@2x', 40 ),
+                  ('iPhone-20@3x', 60 ),
+                  ('iPhone-29@1x', 29 ),
+                  ('iPhone-29@2x', 58 ),
+                  ('iPhone-29@3x', 87 ),
+                  ('iPhone-40@1x', 40 ),
+                  ('iPhone-40@2x', 80 ),
+                  ('iPhone-40@3x', 120 ),
+                  ('iPhone-60@1x', 60 ),
+                  ('iPhone-60@2x', 120 ),
+                  ('iPhone-60@3x', 180 ))
+    
+    dpi_final = ()
+    
+    if iphone:
+        dpi_final = dpi_final + dpi_ratios_iphone
+
+    if ipad:
+        dpi_final = dpi_final + dpi_ratios_ipad
+
+    if itunesartwork:
+        dpi_final = dpi_final + dpi_ratios_itunes
+
+    if len(dpi_final) == 0:
+        gimp.message('select one of export type')
+
+    for folder, ratio in dpi_final:
 
         new_img = gimpfu.pdb.gimp_edit_paste_as_new(); #@UndefinedVariable
         
@@ -110,6 +128,11 @@ gimpfu.register("python_fu_ios_app_launcher",
                 "*", [
                     (gimpfu.PF_DIRNAME, "res-folder",     "Project icons Folder", DEFAULT_OUTPUT_DIR), #os.getcwd()),
                     (gimpfu.PF_STRING, "image-basename", "Project Name", 'icon'),
+                      
+                    (gimpfu.PF_BOOL, "iPhone",    "iPhone",   True),
+                    (gimpfu.PF_BOOL, "iPad",    "iPad",   True),
+                    (gimpfu.PF_BOOL, "iTunesArtwork",    "iTunesArtwork",   True),
+                      
                     (gimpfu.PF_RADIO, "image-extension", "Image Format", DEFAULT_OUTPUT_EXT, (("gif", "gif"), ("png", "png"), ("jpg", "jpg"))),
                       ], 
                 [], 
