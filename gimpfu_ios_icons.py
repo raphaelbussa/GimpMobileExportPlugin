@@ -23,10 +23,11 @@ import os
 DEFAULT_OUTPUT_DIR = os.getcwd()
 DEFAULT_OUTPUT_EXT = 'png'
 DEFAULT_FOLDER_PREFIX = 'drawable'
+DEFAULT_TARGET_PREFIX = 'width'
 
 UPSCALE_WARN_MESSAGE = '\nQuality of your application could be seriously affected when using upscaled bitmaps !'
 
-def write_xdpi(img, layer, res_folder, image_basename, target_width, x_ldpi, x_mdpi, x_hdpi, image_extension):
+def write_xdpi(img, layer, res_folder, image_basename, target, target_width_height, x_ldpi, x_mdpi, x_hdpi, image_extension):
     '''
     Resize and write images for all android density folders 
     
@@ -34,7 +35,8 @@ def write_xdpi(img, layer, res_folder, image_basename, target_width, x_ldpi, x_m
     @param layer: gimp layer (or drawable)
     @param res_folder: output directory : basically res folder of your android project 
     @param image_basename: basename of your image, ex: icon
-    @param target_width: new width for your image
+    @param target: new width for your image
+    @param target_width_height: fixed misures
     @param target_dpi: reference density for your target width
     @param image_extension: output format
     '''
@@ -53,9 +55,18 @@ def write_xdpi(img, layer, res_folder, image_basename, target_width, x_ldpi, x_m
 
         new_img = gimpfu.pdb.gimp_edit_paste_as_new(); #@UndefinedVariable
         
-        resize_ratio = float(target_width) / new_img.width
-        target_dp_width = target_width
-        target_dp_height = round(new_img.height * resize_ratio)
+        target_dp_width = 0
+        target_dp_height = 0
+    
+        if target_width_height == "width":
+            resize_ratio = float(target) / new_img.width
+            target_dp_width = target
+            target_dp_height = round(new_img.height * resize_ratio)
+
+        if target_width_height == "height":
+            resize_ratio = float(target) / new_img.height
+            target_dp_width = round(new_img.width * resize_ratio)
+            target_dp_height = target
         
         # Compute new dimensions for the image
         new_width = target_dp_width * ratio
@@ -84,12 +95,13 @@ def write_xdpi(img, layer, res_folder, image_basename, target_width, x_ldpi, x_m
 gimpfu.register("python_fu_ios_icons",
                 "Write iOS icons for all icon size",
                 "Write images for all iOS sizes",
-                "rebus007", "Raphael Bussa", "2016",
+                "rebus007", "Raphael Bussa", "2017",
                 "<Image>/Filters/iOS/Write iOS icons...",
                 "*", [
                     (gimpfu.PF_DIRNAME, "res-folder",     "Project icons Folder", DEFAULT_OUTPUT_DIR), #os.getcwd()),
                     (gimpfu.PF_STRING, "image-basename", "Image Base Name", 'icon'),
-                    (gimpfu.PF_SPINNER, "target-width", "Target pt Width", 50, (1, 8000, 2)),
+                    (gimpfu.PF_SPINNER, "target", "Target pt", 50, (1, 8000, 2)),
+                    (gimpfu.PF_RADIO, "target-width-height", "Fixed misures", DEFAULT_TARGET_PREFIX, (("width", "width"), ("height", "height"))),
                     (gimpfu.PF_BOOL, "x_ldpi",    "  Export 1x",   True),
                     (gimpfu.PF_BOOL, "x_mdpi",    "  Export 2x",   True),
                     (gimpfu.PF_BOOL, "x_hdpi",    "  Export 3x",   True),
