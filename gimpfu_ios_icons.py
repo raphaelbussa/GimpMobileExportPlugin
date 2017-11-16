@@ -45,7 +45,7 @@ def write_xdpi(img, layer, res_folder, image_basename, target, target_width_heig
     
     gimpfu.pdb.gimp_edit_copy_visible(img); #@UndefinedVariable
     
-    dpi_ratios = (('@1x',    1 ,x_ldpi),
+    dpi_ratios = (('',    1 ,x_ldpi),
                   ('@2x',    2    ,x_mdpi),
                   ('@3x',    3  ,x_hdpi))
 
