@@ -26,7 +26,7 @@ DEFAULT_FOLDER_PREFIX = 'drawable'
 
 UPSCALE_WARN_MESSAGE = '\nQuality of your application could be seriously affected when using upscaled bitmaps !'
 
-def write_xdpi(img, layer, res_folder, image_basename, iphone, ipad, itunesartwork, image_extension):
+def write_xdpi(img, layer, res_folder, image_basename, iphone, ipad, apple_watch, itunesartwork, image_extension):
     '''
     Resize and write images for all android density folders 
     
@@ -46,37 +46,40 @@ def write_xdpi(img, layer, res_folder, image_basename, iphone, ipad, itunesartwo
     dpi_ratios_itunes = (('iTunesArtwork@1x', 512 ),
                   ('iTunesArtwork@2x', 1024 ),
                   ('iTunesArtwork@3x', 1536 ))
-
     
-    dpi_ratios_ipad = (('iPad-20@1x', 20 ),
+    dpi_ratios_ipad = (('iPad-20', 20 ),
                   ('iPad-20@2x', 40 ),
-                  ('iPad-20@3x', 60 ),
-                  ('iPad-29@1x', 29 ),
+                  ('iPad-29', 29 ),
                   ('iPad-29@2x', 58 ),
-                  ('iPad-29@3x', 87 ),
-                  ('iPad-40@1x', 40 ),
+                  ('iPad-40', 40 ),
                   ('iPad-40@2x', 80 ),
-                  ('iPad-40@3x', 120 ),
-                  ('iPad-76@1x', 76 ),
+                  ('iPad-50', 50 ),
+                  ('iPad-50@2x', 100 ),
+                  ('iPad-72', 72 ),
+                  ('iPad-72@2x', 144 ),
+                  ('iPad-76', 76 ),
                   ('iPad-76@2x', 152 ),
-                  ('iPad-76@3x', 228 ),
-                  ('iPad-83.5@1x', 83.5 ),
-                  ('iPad-83.5@2x', 167 ),
-                  ('iPad-83.5@3x', 250.5 ))
-
+                  ('iPad-83.5@2x', 167 ))
     
-    dpi_ratios_iphone = (('iPhone-20@1x', 20 ),
-                  ('iPhone-20@2x', 40 ),
+    dpi_ratios_iphone = (('iPhone-20@2x', 40 ),
                   ('iPhone-20@3x', 60 ),
-                  ('iPhone-29@1x', 29 ),
+                  ('iPhone-29', 29 ),
                   ('iPhone-29@2x', 58 ),
                   ('iPhone-29@3x', 87 ),
-                  ('iPhone-40@1x', 40 ),
                   ('iPhone-40@2x', 80 ),
                   ('iPhone-40@3x', 120 ),
-                  ('iPhone-60@1x', 60 ),
+                  ('iPhone-57', 57 ),
+                  ('iPhone-57@2x', 114 ),
                   ('iPhone-60@2x', 120 ),
                   ('iPhone-60@3x', 180 ))
+    
+    dpi_ratios_watch = (('watch-24@2x', 48 ),
+                  ('watch-27-5@2x', 55 ),
+                  ('watch-29@2x', 58 ),
+                  ('watch-29@3x', 87 ),
+                  ('watch-40', 80 ),
+                  ('watch-86@2x', 172 ),
+                  ('watch-98@2x', 196 ))
     
     dpi_final = ()
     
@@ -88,6 +91,9 @@ def write_xdpi(img, layer, res_folder, image_basename, iphone, ipad, itunesartwo
 
     if itunesartwork:
         dpi_final = dpi_final + dpi_ratios_itunes
+
+    if apple_watch:
+        dpi_final = dpi_final + dpi_ratios_watch
 
     if len(dpi_final) == 0:
         gimp.message('select one of export type')
@@ -131,8 +137,9 @@ gimpfu.register("python_fu_ios_app_launcher",
                       
                     (gimpfu.PF_BOOL, "iPhone",    "iPhone",   True),
                     (gimpfu.PF_BOOL, "iPad",    "iPad",   True),
+                    (gimpfu.PF_BOOL, "Watch",    "Watch",   True),
                     (gimpfu.PF_BOOL, "iTunesArtwork",    "iTunesArtwork",   True),
-                      
+
                     (gimpfu.PF_RADIO, "image-extension", "Image Format", DEFAULT_OUTPUT_EXT, (("gif", "gif"), ("png", "png"), ("jpg", "jpg"))),
                       ], 
                 [], 
